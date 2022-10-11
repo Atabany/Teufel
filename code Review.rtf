@@ -1,0 +1,137 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2639
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;\f2\fmodern\fcharset0 Courier;
+\f3\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue255;\red190\green199\blue208;
+\red189\green198\blue208;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c100000\c100000\c99985;\cssrgb\c78933\c82075\c85114;
+\cssrgb\c78824\c81961\c85098;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww21100\viewh36480\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs30 \cf0 Hey Bob I hope you are doing great, Thank you for your work, It\'92s really a good job but I would love to add some notes to consider so we can make more aligned with our code style and structure.\
+\
+Some general notes:- \
+A. I think we need to divide the Types in different files so when we are browsing the file / project explorer it\'92s good that things aren\'92t hidden. \
+ \
+B. We need to have consistent code style regarding the line spaces and open and close brackets and naming conventions. \
+\
+C. All the strings we can move it to separated constants in separated file or strings files for to help us being more organized and also if we think in the future  about the localization it would be easier to maintain.\
+\
+D. It could be better using protocols for the viewModel and inject the viewModel that conform to this protocol so we can have low tight coupling between the layers and better for testing. \
+\
+And here some more details: - \
+\
+On line 1,2: I think we can remove these line spaces \
+\
+On line 12: could we extract the MusicAblbum Model into a new separated file and also I think we need it to conform to Codable protocol so we can decode it while making the fetch_albums request below.\
+\
+On line 15: I think there is no need for this extra space line\
+\
+On line 19: Could we rename this ViewModel to be more descriptive for example  AblumsViewModel\
+\
+On line 20: Could we move this open brackets to the end of the line 19 so we can have a persistence code style.\
+\
+On line 29: Could we rename the function it to be fetchAlbums() to persist the coding style \
+\
+On line 30: could we store the url in a different variable and make it optional as it\'92s dangerous to force unwrap it and we can use (guard let) or if (If let) to unwrap it rather than using force unwrapping and I think it\'92s better to store the urls in a seperate file and separate constant so we can have more organizing \
+\
+On line 37: I think we need to store this subscription in cancellables variable to keep the subscription alive\
+\
+On line 41: Could we append the \'91View\'92 to the Albums to be \'91AlbumsView\'92 so it would be more descriptive \
+\
+On line 42: Could we move this open brackets to the end of the line 41 so we can have a persistence code style.\
+\
+On line 43: could we remove the semicolone to persist the coding style as it\'92s not Swifty \
+\
+On line 43: I think the ViewModel object declaration miss the parameter which is albums \
+\
+On line 45: Could we make it private \
+\
+On line 46: I think we could remove this line as we don\'92t use this variable in the view.\
+\
+On line 50: we could make it simpler to be like 
+\f1\b if isLoading
+\f0\b0  \{  \} \
+\
+On line 55: Could we extract this view intro a separated view to be more maintainable and readable\
+	 \
+On line 61: We could instead of creating binding this way we could declare the showDetailView as State at line 45 to be like  State var showDetailView  and then pass it to is active like this $showDeatilView to more readable, maintainable.\
+\
+On line 75: Could we re-indent this curly brackets so every one of them would be on a separated line and indented to each other to be for the persistence of the code style and to be more readable and maintainable to be like the \
+	 \}\
+       \}\
+     \}\
+   \}\
+ \}\
+\
+On line 78: could we add the action of the button\
+\
+On line 89: I don\'92t get why we need to toggle the 
+\f1\b isLoading
+\f0\b0  here. I think we need to set it to true as it before the api call happens so and after we get the data we need somehow set it again to be false  to be false.\
+\
+On line 90: I think we will be needed to rename fetch_albums() to be fetchAlbums after renamed it in the viewModel class to follow the camelCase style to so we can be persistence \
+\
+On line 95: DetailsView name is generic name for every details could we be more specific for naming it to be something like AlbumMusicDetailsView to be more maintainable in the future if we need to add any other datailsView.\
+\
+On line 97: Could we name coverarturl it to be coverArtURL to as mentioned above to follow the naming convention for the camelCase and for the persistence code style, I think also we need to inject it in the DetailsView we can use init(coverArtURL: URL) \
+\
+On line 106: \
+A. the request shouldn\'92t be called in the MainThread so the app can be responsive while getting the data\
+B. this function for the coverURLData shouldn\'92t be written in the View we should have a viewModel or Repo or Service class depending on our architecture that conform to some protocol that have the function in it\'92s requirement \
+For example: - \
+Protocol  MusicAlbumDetailViewModelProtocol \{ func fetchCoverData(url: URL) -> AnyPublisher(Data) \}\
+Class MusicAlbumDetailViewModel:    MusicAlbumDetailViewModelProtocol\
+\
+On line 108: we can refactor this function after we extract it at the point above, so we could make a function that return AnyPublisher<Data, URLError> \
+And we can use .map to get only the data using \{$0.data\}\
+To something like this :- \
+\
+Func fetchCoverData(for url: URL) -> AnyPublisher<Data, URLError>  \{\
+	URLSession.shared.dataTaskPublisher(for: url)\
+	.map \{ $0.data \}\
+	.eraseToAnyPublisher() \
+ \}\
+\
+On line 124:  if  variable != nil is not the best Swifty for for unwrap optional , we can better use guard let, or if let \
+\
+On line 126: could we extract this to extension so we can use it everywhere else something like this \
+\
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs26 \cf2 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec3 import Foundation\
+import SwiftUI\
+#if canImport(UIKit)\
+import UIKit\
+#elseif canImport(AppKit)\
+import AppKit\
+#endif\
+\
+extension Image \{\
+    /// Initializes a SwiftUI `Image` from data.\
+    init?(data: Data) \{\
+        #if canImport(UIKit)\
+        if let uiImage = UIImage(data: data) \{\
+            self.init(uiImage: uiImage)\
+        \} else \{\
+            return nil\
+        \}\
+        #elseif canImport(AppKit)\
+        if let nsImage = NSImage(data: data) \{\
+            self.init(nsImage: nsImage)\
+        \} else \{\
+            return nil\
+        \}\
+        #else\
+        return nil\
+        #endif\
+    \}\
+\}\
+\pard\pardeftab720\partightenfactor0
+
+\f3\fs28 \cf2 \strokec4 \
+On line 140: could we put this in somewhere related to mock data or to the model for more organizing. \
+\
+\cf5 \strokec5 \
+}
